@@ -210,7 +210,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
--- Taha added 12 -2 issue pthon
 -- Set indentation options for Python files
 vim.api.nvim_create_autocmd('FileType', {
   pattern = 'python',
@@ -219,6 +218,17 @@ vim.api.nvim_create_autocmd('FileType', {
     vim.opt_local.tabstop = 4 -- Number of spaces tabs count for
     vim.opt_local.shiftwidth = 4 -- Number of spaces to use for each step of (auto)indent
     vim.opt_local.softtabstop = 4 -- Number of spaces that a <Tab> counts for while editing
+  end,
+})
+
+-- Set indentation options for HTML, CSS, and JavaScript files
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'html', 'css', 'javascript', 'javascriptreact', 'typescriptreact' },
+  callback = function()
+    vim.opt_local.expandtab = true -- Use spaces instead of tabs
+    vim.opt_local.tabstop = 2 -- Number of spaces tabs count for
+    vim.opt_local.shiftwidth = 2 -- Number of spaces to use for each step of (auto)indent
+    vim.opt_local.softtabstop = 2 -- Number of spaces that a <Tab> counts for while editing
   end,
 })
 
@@ -247,7 +257,8 @@ vim.opt.rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+
+  -- 'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
