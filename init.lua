@@ -223,7 +223,7 @@ vim.api.nvim_create_autocmd('FileType', {
 
 -- Set indentation options for HTML, CSS, and JavaScript files
 vim.api.nvim_create_autocmd('FileType', {
-  pattern = { 'html', 'css', 'javascript', 'javascriptreact', 'typescriptreact' },
+  pattern = { 'html', 'css', 'javascript', 'javascriptreact', 'typescriptreact', 'lua' },
   callback = function()
     vim.opt_local.expandtab = true -- Use spaces instead of tabs
     vim.opt_local.tabstop = 2 -- Number of spaces tabs count for
