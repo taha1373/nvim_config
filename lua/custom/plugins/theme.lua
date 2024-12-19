@@ -18,7 +18,8 @@ return {
     -- Link Python docstring highlight group to Comment
     vim.api.nvim_set_hl(0, '@string.documentation.python', { link = 'Comment' })
     -- Set custom highlight for HTML attributes
-    vim.api.nvim_set_hl(0, '@tag.attribute', { fg = '#b16286' })
-    vim.api.nvim_set_hl(0, '@tag.delimiter', { fg = '#b16286' })
+    vim.api.nvim_set_hl(0, '@tag', { fg = '#83a598' })
+    vim.api.nvim_set_hl(0, '@tag.attribute', { fg = '#fabd2f' })
+    vim.api.nvim_set_hl(0, '@tag.delimiter', { fg = '#83a598' })
   end,
 }
