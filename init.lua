@@ -663,9 +663,6 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
-        -- gopls = {},
-        -- pyright = {},
         pylsp = {},
         bashls = {
           settings = {
@@ -677,6 +674,20 @@ require('lazy').setup({
           filetypes = { 'sh', 'bash', 'zsh' }, -- Include zsh file type
           cmd = { 'bash-language-server', 'start' },
         },
+        html = {}, -- HTML Language Server
+        cssls = {}, -- CSS Language Server
+        emmet_ls = { -- Emmet Language Server
+          filetypes = { 'html', 'css', 'javascript', 'javascriptreact', 'typescriptreact' },
+          init_options = {
+            html = {
+              options = {
+                -- For inline CSS within HTML
+                ['bem.enabled'] = true,
+              },
+            },
+          },
+        },
+        ts_ls = {}, -- JavaScript and TypeScript Language Server,
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -697,7 +708,7 @@ require('lazy').setup({
                 callSnippet = 'Replace',
               },
               -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-              -- diagnostics = { disable = { 'missing-fields' } },
+              diagnostics = { disable = { 'missing-fields' } },
             },
           },
         },
@@ -716,6 +727,12 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        'pylsp',
+        'bashls',
+        'html',
+        'cssls',
+        'ts_ls',
+        'emmet_ls',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -906,27 +923,6 @@ require('lazy').setup({
     'nvim-tree/nvim-web-devicons',
     opts = { default = true }, -- Enable default icon settings
   },
-  {
-    'sainnhe/gruvbox-material',
-    priority = 1000, -- Load this plugin before others
-    config = function()
-      -- Set gruvbox-material to dark mode
-      vim.g.gruvbox_material_background = 'medium'
-      -- Enable the material palette
-      vim.g.gruvbox_material_palette = 'material'
-      -- Disable bold fonts (optional)
-      vim.g.gruvbox_material_bold = false
-      -- Set better contrast for sidebars, popups, and floats
-      vim.g.gruvbox_material_visual = 'reverse'
-      vim.g.gruvbox_material_sign_column_background = 'none'
-      vim.g.gruvbox_material_diagnostic_virtual_text = 'colored'
-
-      -- Apply the colorscheme
-      vim.cmd.colorscheme 'gruvbox-material'
-      -- Link Python docstring highlight group to Comment
-      vim.api.nvim_set_hl(0, '@string.documentation.python', { link = 'Comment' })
-    end,
-  },
   -- Highlight todo, notes, etc in comments
   {
     'folke/todo-comments.nvim',
@@ -934,7 +930,6 @@ require('lazy').setup({
     dependencies = { 'nvim-lua/plenary.nvim' },
     opts = { signs = false },
   },
-
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
     config = function()
@@ -991,6 +986,10 @@ require('lazy').setup({
         'vim',
         'vimdoc',
         'python',
+        'html',
+        'javascript',
+        'typescript',
+        'css',
       },
       -- Autoinstall languages that are not installed
       auto_install = true,
@@ -1031,7 +1030,7 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
