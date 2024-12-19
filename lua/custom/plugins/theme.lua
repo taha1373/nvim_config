@@ -24,7 +24,7 @@ return {
       callback = function()
         vim.api.nvim_set_hl(0, '@tag', { fg = '#83a598' })
         vim.api.nvim_set_hl(0, '@tag.attribute', { fg = '#fabd2f' })
-        vim.api.nvim_set_hl(0, '@tag.delimiter', { fg = '#83a598' })
+        vim.api.nvim_set_hl(0, '@tag.delimiter', { fg = '#fb4934' })
       end,
     })
   end,
