@@ -17,5 +17,8 @@ return {
     vim.cmd.colorscheme 'gruvbox-material'
     -- Link Python docstring highlight group to Comment
     vim.api.nvim_set_hl(0, '@string.documentation.python', { link = 'Comment' })
+    -- Set custom highlight for HTML attributes
+    vim.api.nvim_set_hl(0, '@tag.attribute', { fg = '#b16286' })
+    vim.api.nvim_set_hl(0, '@tag.delimiter', { fg = '#b16286' })
   end,
 }
