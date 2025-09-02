@@ -160,6 +160,9 @@ vim.opt.scrolloff = 10
 -- Add an 80-character ruler
 vim.opt.colorcolumn = '80'
 
+-- I added this for colorizer to work
+vim.opt.termguicolors = true
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -223,12 +226,19 @@ vim.api.nvim_create_autocmd('FileType', {
 
 -- Set indentation options for HTML, CSS, and JavaScript files
 vim.api.nvim_create_autocmd('FileType', {
-  pattern = { 'html', 'css', 'javascript', 'javascriptreact', 'typescriptreact', 'lua' },
+  pattern = { 'html', 'htmldjango', 'css', 'javascript', 'javascriptreact', 'typescriptreact', 'lua' },
   callback = function()
     vim.opt_local.expandtab = true -- Use spaces instead of tabs
     vim.opt_local.tabstop = 2 -- Number of spaces tabs count for
     vim.opt_local.shiftwidth = 2 -- Number of spaces to use for each step of (auto)indent
     vim.opt_local.softtabstop = 2 -- Number of spaces that a <Tab> counts for while editing
+  end,
+})
+
+vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
+  pattern = '*.html',
+  callback = function()
+    vim.bo.filetype = 'htmldjango'
   end,
 })
 
@@ -315,7 +325,33 @@ require('lazy').setup({
       end,
     },
   },
-
+  {
+    'norcalli/nvim-colorizer.lua',
+    -- Load the plugin on relevant files or events.
+    -- You can also use a more general event (e.g. 'BufReadPost')
+    -- or a command (e.g. 'ColorizerToggle') if you prefer.
+    event = { 'BufReadPre', 'BufNewFile' },
+    config = function()
+      require('colorizer').setup({
+        -- Highlight color codes in these file types
+        'css',
+        'scss',
+        'html',
+        'javascript',
+        'typescript',
+      }, {
+        RGB = true, -- #RGB hex codes
+        RRGGBB = true, -- #RRGGBB hex codes
+        names = false, -- Disable named colors like "Red"
+        RRGGBBAA = true, -- #RRGGBBAA hex codes
+        rgb_fn = true, -- CSS rgb() and rgba() functions
+        hsl_fn = true, -- CSS hsl() and hsla() functions
+        css = true, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
+        css_fn = true, -- Enable all CSS *functions*: rgb_fn, hsl_fn
+        mode = 'foreground', -- Show a small rectangle before the color code
+      })
+    end,
+  },
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
   -- This is often very useful to both group configuration, as well as handle
@@ -688,7 +724,7 @@ require('lazy').setup({
         html = {}, -- HTML Language Server
         cssls = {}, -- CSS Language Server
         emmet_ls = { -- Emmet Language Server
-          filetypes = { 'html', 'css', 'javascript', 'javascriptreact', 'typescriptreact' },
+          filetypes = { 'html', 'htmldjango', 'css', 'javascript', 'javascriptreact', 'typescriptreact' },
           init_options = {
             html = {
               options = {
@@ -778,22 +814,23 @@ require('lazy').setup({
     },
     opts = {
       notify_on_error = false,
-      format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
-        local lsp_format_opt
-        if disable_filetypes[vim.bo[bufnr].filetype] then
-          lsp_format_opt = 'never'
-        else
-          lsp_format_opt = 'fallback'
-        end
-        return {
-          timeout_ms = 500,
-          lsp_format = lsp_format_opt,
-        }
-      end,
+      -- format_on_save = function(bufnr)
+      --   -- Disable "format_on_save lsp_fallback" for languages that don't
+      --   -- have a well standardized coding style. You can add additional
+      --   -- languages here or re-enable it for the disabled ones.
+      --   local disable_filetypes = { c = true, cpp = true }
+      --   local lsp_format_opt
+      --   if disable_filetypes[vim.bo[bufnr].filetype] then
+      --     lsp_format_opt = 'never'
+      --   else
+      --     lsp_format_opt = 'fallback'
+      --   end
+      --   return {
+      --     timeout_ms = 500,
+      --     lsp_format = lsp_format_opt,
+      --   }
+      -- end,
+      format_on_save = false,
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
