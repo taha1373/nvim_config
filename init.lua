@@ -235,6 +235,18 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
+-- C / C++ indentation
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'c', 'cpp', 'objc', 'objcpp' },
+  callback = function()
+    vim.opt_local.expandtab = true    -- use spaces
+    vim.opt_local.tabstop = 4
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.softtabstop = 4
+    vim.opt_local.cindent = true      -- optional: C-style indentation
+  end,
+})
+
 vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   pattern = '*.html',
   callback = function()
@@ -759,6 +771,19 @@ require('lazy').setup({
             },
           },
         },
+        clangd = {
+          cmd = {
+            "clangd",
+            "--background-index",
+            "--clang-tidy",
+            "--completion-style=detailed",
+            "--header-insertion=iwyu",
+            "--fallback-style=LLVM", -- uses .clang-format if present
+          },
+          filetypes = { "c", "cpp", "objc", "objcpp" },
+          -- If your compile_commands.json lives in build/, uncomment:
+          -- cmd = { "clangd", "--background-index", "--clang-tidy", "--completion-style=detailed", "--header-insertion=iwyu", "--fallback-style=LLVM", "--compile-commands-dir=build" },
+        },
       }
 
       -- Ensure the servers and tools above are installed
@@ -780,6 +805,7 @@ require('lazy').setup({
         'cssls',
         'ts_ls',
         'emmet_ls',
+        'clangd',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
