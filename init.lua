@@ -160,6 +160,9 @@ vim.opt.scrolloff = 10
 -- Add an 80-character ruler
 vim.opt.colorcolumn = '80'
 
+-- Hide ~ end-of-buffer markers
+vim.opt.fillchars = { eob = ' ' }
+
 -- I added this for colorizer to work
 vim.opt.termguicolors = true
 
