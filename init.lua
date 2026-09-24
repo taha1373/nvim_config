@@ -341,30 +341,25 @@ require('lazy').setup({
     },
   },
   {
-    'norcalli/nvim-colorizer.lua',
+    'catgoose/nvim-colorizer.lua',
     -- Load the plugin on relevant files or events.
     -- You can also use a more general event (e.g. 'BufReadPost')
     -- or a command (e.g. 'ColorizerToggle') if you prefer.
     event = { 'BufReadPre', 'BufNewFile' },
     config = function()
-      require('colorizer').setup({
-        -- Highlight color codes in these file types
-        'css',
-        'scss',
-        'html',
-        'javascript',
-        'typescript',
-      }, {
-        RGB = true, -- #RGB hex codes
-        RRGGBB = true, -- #RRGGBB hex codes
-        names = false, -- Disable named colors like "Red"
-        RRGGBBAA = true, -- #RRGGBBAA hex codes
-        rgb_fn = true, -- CSS rgb() and rgba() functions
-        hsl_fn = true, -- CSS hsl() and hsla() functions
-        css = true, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
-        css_fn = true, -- Enable all CSS *functions*: rgb_fn, hsl_fn
-        mode = 'foreground', -- Show a small rectangle before the color code
-      })
+      require('colorizer').setup {
+        filetypes = { 'css', 'scss', 'html', 'javascript', 'typescript' },
+        options = {
+          parsers = {
+            css = true,
+            names = { enable = false },
+            hex = { default = true, rrggbbaa = true },
+            rgb = { enable = true },
+            hsl = { enable = true },
+          },
+          display = { mode = 'foreground' },
+        },
+      }
     end,
   },
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
@@ -446,7 +441,7 @@ require('lazy').setup({
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
-    branch = '0.1.x',
+    version = '*',
     dependencies = {
       'nvim-lua/plenary.nvim',
       { -- If encountering errors, see telescope-fzf-native README for installation instructions
@@ -1058,11 +1053,11 @@ require('lazy').setup({
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    branch = 'main',
+    lazy = false,
     build = ':TSUpdate',
-    main = 'nvim-treesitter.configs', -- Sets main module to use for opts
-    -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-    opts = {
-      ensure_installed = {
+    config = function()
+      local ensure_installed = {
         'bash',
         'c',
         'diff',
@@ -1075,22 +1070,32 @@ require('lazy').setup({
         'vim',
         'vimdoc',
         'python',
-        'html',
         'javascript',
         'typescript',
         'css',
-      },
-      -- Autoinstall languages that are not installed
-      auto_install = true,
-      highlight = {
-        enable = true,
-        -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-        --  If you are experiencing weird indenting issues, add the language to
-        --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
-      },
-      indent = { enable = true, disable = { 'ruby' } },
-    },
+      }
+
+      local treesitter = require 'nvim-treesitter'
+      treesitter.setup()
+
+      local installed = treesitter.get_installed 'parsers'
+      local missing = vim.tbl_filter(function(parser)
+        return not vim.list_contains(installed, parser)
+      end, ensure_installed)
+      if #missing > 0 then
+        treesitter.install(missing, { max_jobs = 1 })
+      end
+
+      vim.api.nvim_create_autocmd('FileType', {
+        desc = 'Enable Treesitter highlighting and indentation when a parser is available',
+        group = vim.api.nvim_create_augroup('kickstart-treesitter', { clear = true }),
+        callback = function(args)
+          if pcall(vim.treesitter.start, args.buf) then
+            vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
+        end,
+      })
+    end,
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
     --
