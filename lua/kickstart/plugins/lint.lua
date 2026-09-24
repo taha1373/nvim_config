@@ -5,10 +5,16 @@ return {
     event = { 'BufReadPre', 'BufNewFile' },
     config = function()
       local lint = require 'lint'
-      lint.linters_by_ft = {
-        markdown = { 'markdownlint' },
-        python = { 'ruff' },
-      }
+      lint.linters_by_ft = {}
+
+      -- Only enable command-line linters that are actually installed. This
+      -- avoids an ENOENT error every time a matching buffer is linted.
+      if vim.fn.executable 'markdownlint' == 1 then
+        lint.linters_by_ft.markdown = { 'markdownlint' }
+      end
+      if vim.fn.executable 'ruff' == 1 then
+        lint.linters_by_ft.python = { 'ruff' }
+      end
 
       -- To allow other plugins to add linters to require('lint').linters_by_ft,
       -- instead set linters_by_ft like this:
