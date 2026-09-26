@@ -1062,6 +1062,7 @@ require('lazy').setup({
         'c',
         'diff',
         'html',
+        'json',
         'lua',
         'luadoc',
         'markdown',
@@ -1072,11 +1073,15 @@ require('lazy').setup({
         'python',
         'javascript',
         'typescript',
+        'toml',
+        'yaml',
         'css',
       }
 
       local treesitter = require 'nvim-treesitter'
       treesitter.setup()
+      -- The JSON grammar also supports comments; there is no separate jsonc parser.
+      vim.treesitter.language.register('json', 'jsonc')
 
       local installed = treesitter.get_installed 'parsers'
       local missing = vim.tbl_filter(function(parser)
