@@ -1071,6 +1071,7 @@ require('lazy').setup({
         'python',
         'javascript',
         'typescript',
+        'tsx',
         'toml',
         'yaml',
         'css',
